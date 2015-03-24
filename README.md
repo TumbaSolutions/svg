@@ -1,0 +1,2 @@
+# svg
+FloorMap example
