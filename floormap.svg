@@ -1,0 +1,164 @@
+<svg id="floorMap" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"
+preserveAspectRatio="xMidYMid meet" viewBox="0 0 640 320">
+
+    <script type="text/ecmascript"><![CDATA[
+	/**
+	* This program is free software: you can redistribute it and/or modify 
+	* This program is distributed in the hope that it will be useful,
+    * but WITHOUT ANY WARRANTY; without even the implied warranty of
+    * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+	*
+	* Tumba Solutions
+	*/
+
+        var onHallClickedListener;
+
+        function hallClicked(svgEl) {
+            if (onHallClickedListener) {
+                onHallClickedListener(svgEl);
+            }
+        }
+
+        function init() {
+        }
+
+        //////// Interface /////////////
+		/**
+		 * Get count of all floor map levels 
+		 */
+        document.getLevelCount = function() {
+            var levels = document.getElementsByClassName("levelGroup");
+            return levels.length;
+        }
+
+		/**
+		 * Get count of all floor map halls
+		 */
+        document.getTotalHallCount = function() {
+            var levels = document.getElementsByClassName("hall");
+            return levels.length;
+        }
+		
+		/**
+		 * Get count of all floor map halls per the selected level 
+		 */
+        document.getLevelHallCount = function() {
+            var level = document.getElementById("groupLevel"+document.getCurrentLevel());
+            var levelHalls = level.getElementsByClassName("hall");
+            return levelHalls.length;
+        }
+
+		/**
+		 * Get current level
+		 */
+        document.getCurrentLevel = function() {
+            return currentLevel;
+        }
+
+        document.showLevel = function(level) {
+            var levels = document.getElementsByClassName("levelGroup");
+            var levelsCount = levels.length;
+            for (var i = 0; i < levelsCount; i++) {
+				if (i+1 != level) {
+                    if (i+1 < level) {
+                        // blur lower levels with factor based on level
+                        var lowerFloorOpacity = ((i+1)/level)/4;
+						levels[i].style.display = "block";
+                        levels[i].style.opacity = lowerFloorOpacity;
+                    } else {
+                        // hide higher levels
+                        levels[i].style.opacity = 0;
+						levels[i].style.display = "none";
+                    }
+                } else {
+                    // show leve
+                    currentLevel = level;
+					levels[i].style.display = "block";
+                    levels[i].style.opacity = 1;
+                    var label = document.getElementById("levelLabel")
+                    label.firstChild.nodeValue = "Floor " + currentLevel;
+                } 
+            }
+        }
+
+        document.setOnHallClickedListener = function(onClickedListener) {
+            if (onClickedListener) {
+                onHallClickedListener = onClickedListener;
+            }
+        }
+
+        window.addEventListener("load",init);
+    ]]>
+    </script>
+	<style type="text/css" >
+      <![CDATA[
+
+		svg {
+			_transform: rotate(50deg) translate(7.5%,-57%);
+		}
+
+
+        rect.hall {
+			stroke:#333;
+			stroke-width:1;
+			fill-opacity:1;
+			stroke-opacity:0.9;
+			fill:#ccc;
+		}
+		rect.level {
+			fill:#ccc;
+			fill-opacity:0.1;
+		}
+		g.levelGroup {
+			opacity: 0;
+			transition: opacity 0.3s;
+		}
+		g#groupLevel1 {
+			opacity: 1;
+		}
+
+		rect#lobby {
+			fill-opacity:0.8;
+		}
+
+		text {
+			font-size: 14px;
+		}
+
+      ]]>
+    </style>
+    <rect class="level" id="levelRect" height="300" width="640"/>
+    <text id="levelLabel" x="295" y="260">Floor 1</text>
+
+    <g class="levelGroup" id="groupLevel1">
+
+        <rect class="hall" id="lobby" width="200" height="100" x="220" y="120" onclick="hallClicked(this)"/>
+        <text id="lobbyLabel" x="295" y="175">Lobby</text>
+        <text id="entranceLabel" x="290" y="215">Entrance</text>
+
+        <rect class="hall" id="hall1" width="200" height="100" x="20" y="120" onclick="hallClicked(this)"/>
+        <text id="hall1Label" x="95" y="175">Hall 1</text>
+
+        <rect class="hall" id="hall2" width="200" height="100" x="120" y="20" onclick="hallClicked(this)"/>
+        <text id="hall2Label" x="195" y="75">Hall 2</text>
+
+        <rect class="hall" id="hall3" width="200" height="100" x="320" y="20" onclick="hallClicked(this)"/>
+        <text id="hall3Label" x="395" y="75">Hall 3</text>
+
+        <rect class="hall" id="hall4" width="200" height="100" x="420" y="120" onclick="hallClicked(this)"/>
+        <text id="hall4Label" x="495" y="175">Hall 4</text>
+    </g>
+    <g class="levelGroup" id="groupLevel2">
+
+        <rect class="hall" id="hall5" width="200" height="100" x="320" y="20" onclick="hallClicked(this)"/>
+        <text id="hall5Label" x="395" y="75">Hall 5</text>
+
+        <rect class="hall" id="hall6" width="200" height="100" x="420" y="120" onclick="hallClicked(this)"/>
+        <text id="hall6Label" x="495" y="175">Hall 6</text>
+    </g>
+    <g class="levelGroup" id="groupLevel3">
+
+        <rect class="hall" id="hall7" width="200" height="100" x="420" y="120" onclick="hallClicked(this)"/>
+        <text id="hall7Label" x="495" y="175">Hall 7</text>
+    </g>
+</svg>

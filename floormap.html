@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<!--
+/**
+	* This program is free software: you can redistribute it and/or modify 
+	* This program is distributed in the hope that it will be useful,
+    * but WITHOUT ANY WARRANTY; without even the implied warranty of
+    * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+	*
+	* Tumba Solutions
+	*/
+-->
+	</head>
+	<body>
+		<h2>Actions in HTML trigger events in SVG!</h2>
+		<div>
+			<button onclick="floorPressed(1)">Floor1</button>
+			<button onclick="floorPressed(2)">Floor2</button>
+			<button onclick="floorPressed(3)">Floor3</button>
+		</div>
+
+		<h2>Actions in SVG trigger events in HTML!</h2>
+		<div id="infoDiv"><em>click on halls in svg to change this html</em></div>
+
+<!-- Add SVG here as embedded tag or load it from file local or remote with object tag -->
+<svg id="floorMap" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"
+preserveAspectRatio="xMidYMid meet" viewBox="0 0 1280 640">
+
+	<script type="text/ecmascript"><![CDATA[
+		var svgInterface = new Object();
+	
+		var onHallClickedListener;
+		
+
+		function hallClicked(svgEl) {
+			if (onHallClickedListener) {
+				onHallClickedListener(svgEl);
+			}
+		}
+
+		function init() {
+			svgInterface.showLevel(1);
+		}
+
+		//////// Interface /////////////
+		/**
+		 * Get count of all floor map levels 
+		 */
+		svgInterface.getLevelCount = function() {
+			var levels = document.getElementsByClassName("levelGroup");
+			return levels.length;
+		}
+
+		/**
+		 * Get count of all floor map halls
+		 */
+		svgInterface.getTotalHallCount = function() {
+			var levels = document.getElementsByClassName("hall");
+			return levels.length;
+		}
+		
+		/**
+		 * Get count of all floor map halls per the selected level 
+		 */
+		svgInterface.getLevelHallCount = function() {
+			var level = document.getElementById("groupLevel"+document.getCurrentLevel());
+			var levelHalls = level.getElementsByClassName("hall");
+			return levelHalls.length;
+		}
+
+		/**
+		 * Get current level
+		 */
+		svgInterface.getCurrentLevel = function() {
+			return currentLevel;
+		}
+
+		svgInterface.showLevel = function(level) {
+			var levels = document.getElementsByClassName("levelGroup");
+			var levelsCount = levels.length;
+			for (var i = 0; i < levelsCount; i++) {
+				if (i+1 != level) {
+					if (i+1 < level) {
+						// blur lower levels with factor based on level
+						var lowerFloorOpacity = ((i+1)/level)/4;
+						levels[i].style.display = "block";
+						levels[i].style.opacity = lowerFloorOpacity;
+					} else {
+						// hide higher levels
+						levels[i].style.opacity = 0;
+						levels[i].style.display = "none";
+					}
+				} else {
+					// show level
+					currentLevel = level;
+					levels[i].style.display = "block";
+					levels[i].style.opacity = 1;
+					var label = document.getElementById("levelLabel")
+					label.firstChild.nodeValue = "Floor " + currentLevel;
+				} 
+			}
+		}
+
+		svgInterface.setOnHallClickedListener = function(onClickedListener) {
+			if (onClickedListener) {
+				onHallClickedListener = onClickedListener;
+			}
+		}
+
+		window.addEventListener("load",init);
+	]]>
+	</script>
+	<style type="text/css" >
+	  <![CDATA[
+		rect.hall {
+			stroke:#333;
+			stroke-width:1;
+			fill-opacity:1;
+			stroke-opacity:0.9;
+			fill:#ccc;
+		}
+		rect.level {
+			fill:#ccc;
+			fill-opacity:0.1;
+		}
+		g.levelGroup {
+			opacity: 0;
+			transition: opacity 0.3s;
+		}
+		rect#lobby {
+			fill-opacity:0.8;
+		}
+		text {
+			font-size: 14px;
+		}
+
+	  ]]>
+	</style>
+	<rect class="level" id="levelRect" height="300" width="640"/>
+	<text id="levelLabel" x="295" y="260">Floor 1</text>
+	<g class="levelGroup" id="groupLevel1">
+		<rect class="hall" id="lobby" width="200" height="100" x="220" y="120" onclick="hallClicked(this)"/>
+		<text id="lobbyLabel" x="295" y="175">Lobby</text>
+		<text id="entranceLabel" x="290" y="215">Entrance</text>
+		<rect class="hall" id="hall1" width="200" height="100" x="20" y="120" onclick="hallClicked(this)"/>
+		<text id="hall1Label" x="95" y="175">Hall 1</text>
+		<rect class="hall" id="hall2" width="200" height="100" x="120" y="20" onclick="hallClicked(this)"/>
+		<text id="hall2Label" x="195" y="75">Hall 2</text>
+		<rect class="hall" id="hall3" width="200" height="100" x="320" y="20" onclick="hallClicked(this)"/>
+		<text id="hall3Label" x="395" y="75">Hall 3</text>
+		<rect class="hall" id="hall4" width="200" height="100" x="420" y="120" onclick="hallClicked(this)"/>
+		<text id="hall4Label" x="495" y="175">Hall 4</text>
+	</g>
+	<g class="levelGroup" id="groupLevel2">
+		<rect class="hall" id="hall5" width="200" height="100" x="320" y="20" onclick="hallClicked(this)"/>
+		<text id="hall5Label" x="395" y="75">Hall 5</text>
+		<rect class="hall" id="hall6" width="200" height="100" x="420" y="120" onclick="hallClicked(this)"/>
+		<text id="hall6Label" x="495" y="175">Hall 6</text>
+	</g>
+	<g class="levelGroup" id="groupLevel3">
+		<rect class="hall" id="hall7" width="200" height="100" x="420" y="120" onclick="hallClicked(this)"/>
+		<text id="hall7Label" x="495" y="175">Hall 7</text>
+	</g>
+</svg>
+
+		<script>
+			
+			function floorPressed(level) {
+				svgInterface.showLevel(level);
+			}
+			
+			function hallClickedInSVG(el) {
+				document.getElementById("infoDiv").innerHTML = "Clicked on " + el.id;
+			}
+			
+			//set callback when 
+			svgInterface.setOnHallClickedListener(hallClickedInSVG);
+		</script>
+
+
+		<!-- 
+
+		Insted of using svg in the document you can load it using object and load the DOM element in order to access the JS interface. 
+		Testable when deployed on server due to Access-Origin restrictions on file:/// protocol in the browsers
+
+		<object id="floormap" type="image/svg+xml"></object>
+		<script>
+			var objFloormap = document.getElementById('floormap');
+			var svgDoc;
+			var infoDiv = document.getElementById('infoDiv');
+			
+			//load the svg and create the svgDoc when done
+			function loadFloorMapObject() {
+				var onLoadListener = function () {
+					objFloormap.removeEventListener("load", onLoadListener);
+					if (objFloormap.contentDocument) {
+						svgDoc = objFloormap.contentDocument;
+					} else {
+						var subdoc = null;
+						try {
+							subdoc = objFloormap.getSVGDocument();
+						} catch (e) {
+						}
+						svgDoc = subdoc;
+					}	
+					
+					infoDiv.innerHTML = "SVG loaded!";
+				};
+						
+				objFloormap.addEventListener("load", onLoadListener);
+				objFloormap.data = "floormap.svg";
+			};
+			
+			loadFloorMapObject();
+			
+		</script>
+		 -->
+		 
+	</body>
+</html>
